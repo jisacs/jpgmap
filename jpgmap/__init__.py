@@ -12,6 +12,8 @@ __version__ = "0.0.1"
 
 from .core import proclamer
 from .map import RGB
+from .game import Game
+from .game import Car
 
 """
 from core import RGB

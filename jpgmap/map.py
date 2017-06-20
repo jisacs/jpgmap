@@ -1,5 +1,6 @@
 from scipy.ndimage import imread
 #import matplotlib.pyplot as plt
+import numpy as np
 
 from enum import Enum
 class PixColor(Enum):
@@ -20,23 +21,31 @@ class RGB():
         self.blue = blue
         self.yellow = yellow
 
+class Pixel():
+    def __init__(self, x , y, rgb):
+        self.x = x
+        self.y = y
+        self.rgb = rgb
+
 class Map():
-    def __init__(self):
-        self.pixels = None
+
+    def __init__(self, src=None):
+        if src:
+            self.pixels = np.array(src.pixels)
+        else:
+            self.pixels = None
 
     def load(self, jpg):
         self.pixels=imread(jpg)
         self.lx, self.ly , self.lz= self.pixels.shape
 
-    def set_pixel(self,x, y, rgb):
+    def set_pixel(self, pixel):
         """
-        @param x: x coordonate
-        @param y: y coordonate
-        @param rgb: Object RGB
+        @param pixel: Pixel(x, y, rgb)
         """
-        self.pixels[x, y, PixColor.RED.value] = rgb.red
-        self.pixels[x, y, PixColor.YELLOW.value] = rgb.yellow
-        self.pixels[x, y, PixColor.BLUE.value] = rgb.blue
+        self.pixels[pixel.x, pixel.y, PixColor.RED.value] = pixel.rgb.red
+        self.pixels[pixel.x, pixel.y, PixColor.YELLOW.value] = pixel.rgb.yellow
+        self.pixels[pixel.x, pixel.y, PixColor.BLUE.value] = pixel.rgb.blue
 
     def find_a_white_pos(self):
         for x in range(self.lx):
