@@ -1,7 +1,8 @@
 from scipy.ndimage import imread
 #import matplotlib.pyplot as plt
 import numpy as np
-
+import pygame
+from pygame.locals import *
 
 
 from enum import Enum
@@ -36,14 +37,17 @@ class Pixel(Point):
 
 class Map():
 
-    def __init__(self, src=None):
+    def __init__(self, src=None, jpg_filename=None):
         if src:
             self.pixels = np.array(src.pixels)
         else:
             self.pixels = None
 
-    def load(self, jpg):
-        self.pixels=imread(jpg)
+        self.jpg_filename = jpg_filename
+
+    def load(self, jpg_filename):
+        self.pixels=imread(jpg_filename)
+        self.jpg_filename = jpg_filename
         self.lx, self.ly , self.lz= self.pixels.shape
 
     def set_pixel(self, pixel):
@@ -73,3 +77,23 @@ class Map():
                 if self.pixels[point.x, point.y , PixColor.BLUE.value] >= 255 - delta :
                     return True
         return False
+
+    def display(self):
+        #_map = Map(self.blank_map)
+        #for car in self.car_list:
+        #_map.set_pixel(car.pixel)
+        #plt.imshow(_map.pixels, cmap=plt.cm.gray)
+        #plt.show()
+        #pygame.init
+        print("pygame INIT")
+        pygame.init()
+
+        fenetre = pygame.display.set_mode((640, 480),RESIZABLE)
+        if self.jpg_filename:
+            print(self.jpg_filename)
+            fond = pygame.image.load(self.jpg_filename).convert()
+            fenetre.blit(fond, (0,0))
+
+        fenetre.set_at((10, 10), pygame.Color("red"))
+        #Rafraîchissement de l'écran
+        pygame.display.flip()

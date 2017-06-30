@@ -14,10 +14,10 @@ from datetime import datetime
 
 __all__ = ['proclamer']
 
-from jpgmap.engine import Car
+from jpgmap.car import Car
 from jpgmap.engine import Engine
 from jpgmap.engine import Dir
-from jpgmap.engine import Road
+from jpgmap.road import Road
 from jpgmap.map import Map
 from jpgmap.map import RGB
 from jpgmap.map import PixColor
@@ -29,7 +29,7 @@ def proclamer():
         retourne None, car tout le monde say que "Ex nihilo nihil"
     """
     engine = Engine("raw/small.jpg")
-    engine.display()
+    engine.run()
     """
     map = Map()
     map.load("../raw/small.jpg")
