@@ -1,0 +1,3 @@
+[console_scripts]
+proclame-jpgmap = jpgmap.core:proclamer
+

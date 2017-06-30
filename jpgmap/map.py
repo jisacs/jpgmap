@@ -2,6 +2,8 @@ from scipy.ndimage import imread
 #import matplotlib.pyplot as plt
 import numpy as np
 
+
+
 from enum import Enum
 class PixColor(Enum):
     RED = 1
@@ -21,7 +23,12 @@ class RGB():
         self.blue = blue
         self.yellow = yellow
 
-class Pixel():
+class Point():
+    def __init__(self, x , y):
+        self.x = x
+        self.y = y
+
+class Pixel(Point):
     def __init__(self, x , y, rgb):
         self.x = x
         self.y = y
@@ -53,8 +60,16 @@ class Map():
                 if self.pixels[x, y , PixColor.RED.value] == 255 and self.pixels[x, y , PixColor.YELLOW.value] == 255 and self.pixels[x, y , PixColor.BLUE.value] == 255:
                     return x,y
 
-    """
-    def display(self):
-        plt.imshow(self.pixels, cmap=plt.cm.gray)
-        plt.show()
-    """
+
+    def is_a_white_pos(self, point, delta=0):
+
+
+        #print("is_a_white_pos RED {}".format(self.pixels[point.x, point.y, PixColor.RED.value]))
+        #print("is_a_white_pos YELLOW {}".format(self.pixels[point.x, point.y, PixColor.YELLOW.value]))
+        #print("is_a_white_pos BLUE {}".format(self.pixels[point.x, point.y, PixColor.BLUE.value]))
+
+        if self.pixels[point.x, point.y, PixColor.RED.value] >= 255 - delta:
+            if self.pixels[point.x, point.y , PixColor.YELLOW.value] >= 255 - delta  :
+                if self.pixels[point.x, point.y , PixColor.BLUE.value] >= 255 - delta :
+                    return True
+        return False
