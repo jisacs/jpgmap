@@ -51,7 +51,6 @@ class Map():
     def init_display(self):
             print("pygame INIT")
             pygame.init()
-
             self.fenetre = pygame.display.set_mode((640, 480),RESIZABLE)
 
     def load(self, jpg_filename):
@@ -232,5 +231,5 @@ class Map():
 
     def display(self):
         for pixel in self.get_pixels_ordered():
-            pixel.display(self.fenetre)
+            pixel.display(self.fenetre, offset=Point(0, self.h + 10))
         pygame.display.flip()

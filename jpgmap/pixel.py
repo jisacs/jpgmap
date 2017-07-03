@@ -1,6 +1,6 @@
 import pygame
 from pygame.locals import *
-
+from .point import Point
 
 class Pixel():
     UNKNOWN = 0
@@ -93,9 +93,9 @@ class Pixel():
         return result
     """
 
-    def display(self, fenetre):
+    def display(self, fenetre, offset = Point(0,0))):
         if self.road_type:
             print(self.road_type)
             color = pygame.Color(*self.road_type, 255 )
 
-            fenetre.set_at((self.x, self.y), color)
+            fenetre.set_at((self.x+offset.x, self.y+offset.y), color)
