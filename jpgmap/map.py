@@ -1,6 +1,8 @@
 from scipy.ndimage import imread
 #import matplotlib.pyplot as plt
+from itertools import chain
 import numpy as np
+
 import pygame
 from pygame.locals import *
 
@@ -96,37 +98,72 @@ class Map():
     def set_pixels_map(self, pixels_color):
         self.h,self.w,c= pixels_color.shape
         self.pixels_map = [[Pixel(x,y) for y in range(self.h)] for x in range(self.w)]
-        print('self.w {} self.h {}'.format(self.w, self.h))
+        #print('self.w {} self.h {}'.format(self.w, self.h))
         for x in range(self.w):
             for y in range(self.h):
                 pixel = self.pixels_map[x][y]
-                print("DEBUG ADD Pixel x {}, y {} in tab[{}][{}]".format(pixel.x,pixel.y,x,y))
+                #print("DEBUG ADD Pixel x {}, y {} in tab[{}][{}]".format(pixel.x,pixel.y,x,y))
                 if self.is_a_white_pos(pixel, delta=20):
                     pixel.type = Pixel.ROAD
-                    self.fenetre.set_at((x, y), pygame.Color("red"))
+                    #self.fenetre.set_at((x, y), pygame.Color("red"))
                 else:
                     pixel.type = Pixel.ROCK
-                    self.fenetre.set_at((x, y), pygame.Color("green"))
-        pygame.display.flip()
-        print('x len {}, y len {}'.format(len(self.pixels_map),len(self.pixels_map[0])))
-        
-    def analyse_map(self):
+                    #self.fenetre.set_at((x, y), pygame.Color("green"))
 
 
-        #start_point = Point(92,5) #self.find_a_white_pos()
-        start_pixel = Point(92,5)#self.find_a_white_pos()
-        road = Road(start_pixel)
-        print("Launch road find_yourself ")
-        road.find_yourself(self)
-        self.roads.append(road)
 
-        #self.fenetre.set_at((93,53), pygame.Color("red"))
+        #print('x len {}, y len {}'.format(len(self.pixels_map),len(self.pixels_map[0])))
+    def get_pixels_ordered(self):
         """
+        return a list order  by x,y -> 0,0 0,1 0,2 0,3 ... 1,0 1,1 1,2
+        """
+        return list(chain.from_iterable(zip(*self.pixels_map)))
 
-    #Rafraîchissement de l'écran
-        pygame.display.flip()
 
-    """
+    def analyse_map(self):
+        pixels = self.get_pixels_ordered()
+        for pixel in pixels:
+            neighbours_road, neighbours_road_flags = self.get_neighbours_road(pixel)
+            #print(" pixel {} neighbours_road_flags {}".format(pixel, neighbours_road_flags))
+            if len(neighbours_road) == 1:
+                if neighbours_road_flags["RIGHT"]:
+                    pixel.road_type = Pixel._1_R
+                elif neighbours_road_flags["LEFT"]:
+                    pixel.road_type = Pixel._1_L
+                elif  neighbours_road_flags["UP"]:
+                    pixel.road_type = Pixel._1_U
+                else:
+                    pixel.road_type = Pixel._1_D
+
+            elif len(neighbours_road) == 2:
+                if neighbours_road_flags["RIGHT"] and  neighbours_road_flags["LEFT"] :
+                    pixel.road_type = Pixel._2_H
+                elif neighbours_road_flags["UP"] and  neighbours_road_flags["DOWN"] :
+                    pixel.road_type = Pixel._2_V
+                elif neighbours_road_flags["DOWN"] and  neighbours_road_flags["RIGHT"] :
+                    pixel.road_type = Pixel._2_RD
+                elif neighbours_road_flags["DOWN"] and  neighbours_road_flags["LEFT"] :
+                    pixel.road_type = Pixel._2_LD
+                elif neighbours_road_flags["UP"] and  neighbours_road_flags["LEFT"] :
+                    pixel.road_type = Pixel._2_LU
+                elif neighbours_road_flags["UP"] and  neighbours_road_flags["RIGHT"] :
+                    pixel.road_type = Pixel._2_RU
+
+            elif len(neighbours_road) == 3:
+                if neighbours_road_flags["RIGHT"] and  neighbours_road_flags["LEFT"] and  neighbours_road_flags["UP"]:
+                    pixel.road_type = Pixel._3_UP
+                elif neighbours_road_flags["RIGHT"] and  neighbours_road_flags["LEFT"] and  neighbours_road_flags["DOWN"]:
+                    pixel.road_type = Pixel._3_DO
+                elif neighbours_road_flags["RIGHT"] and  neighbours_road_flags["UP"] and  neighbours_road_flags["DOWN"]:
+                    pixel.road_type = Pixel._3_RI
+                else:
+                    pixel.road_type = Pixel._3_LE
+
+            elif len(neighbours_road) == 4:
+                pixel.road_type = Pixel._4
+
+
+
     def set_pixel(self, pixel):
 
         self.pixels_color[pixel.y, pixel.x, PixColor.RED.value] = pixel.rgb.red
@@ -136,29 +173,45 @@ class Map():
 
     def get_neighbours(self, pixel):
         result = list()
-        print(" get_neighbours x {} , y {}".format(pixel.x, pixel.y))
+        neighbours_road_flags = {"UP":False, "DOWN":False, "LEFT":False, "RIGHT":False }
         try:
-            result.append(self.pixels_map[pixel.x+1][pixel.y])
+            p = self.pixels_map[pixel.x+1][pixel.y]
+            result.append(p)
+            if p.type == Pixel.ROAD:
+                neighbours_road_flags["RIGHT"]=True
         except IndexError:
-            print("IndexError x {} , y {}".format(pixel.x+1, pixel.y))
             pass
         try:
-            result.append(self.pixels_map[pixel.x-1][pixel.y])
+            p = self.pixels_map[pixel.x-1][pixel.y]
+            result.append(p)
+            if p.type == Pixel.ROAD:
+                neighbours_road_flags["LEFT"]=True
         except IndexError:
-            print("IndexError x {} , y {}".format(pixel.x-1, pixel.y))
             pass
         try:
-            result.append(self.pixels_map[pixel.x][pixel.y-1])
+            p = self.pixels_map[pixel.x][pixel.y-1]
+            result.append(p)
+            if p.type == Pixel.ROAD:
+                neighbours_road_flags["UP"]=True
         except IndexError:
-            print("IndexError x {} , y {}".format(pixel.x, pixel.y-1))
             pass
         try:
-            result.append(self.pixels_map[pixel.x][pixel.y+1])
+            p=self.pixels_map[pixel.x][pixel.y+1]
+            if p.type == Pixel.ROAD:
+                neighbours_road_flags["DOWN"]=True
+            result.append(p)
         except IndexError:
-            print("IndexError x {} , y {}".format(pixel.x, pixel.y+1))
             pass
+        return result, neighbours_road_flags
 
-        return result
+
+    def get_neighbours_road(self, pixel):
+        result = list()
+        neighbours, neighbours_road_flags = self.get_neighbours(pixel)
+        for n in neighbours:
+            if n.type == Pixel.ROAD:
+                result.append(n)
+        return result, neighbours_road_flags
 
 
     def find_a_white_pos(self):
@@ -178,5 +231,6 @@ class Map():
 
 
     def display(self):
-        for road in self.roads:
-            road.display(self.fenetre)
+        for pixel in self.get_pixels_ordered():
+            pixel.display(self.fenetre)
+        pygame.display.flip()
