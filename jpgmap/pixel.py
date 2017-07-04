@@ -3,51 +3,29 @@ from pygame.locals import *
 from .point import Point
 
 class Pixel():
-    UNKNOWN = 0
-    ROAD    = 1
-    ROCK    = 2
+    UNKNOWN = "UNKNOWN"
+    ROAD    = "ROAD"
+    ROCK    = "ROCK"
 
     #ROAD TYPE
-    _4     = 0, 0, 0
-    _3_UP  = 255, 255, 255
-    _3_DO  = 0, 200, 255
-    _3_RI  = 255, 0, 0
-    _3_LE  = 255, 100, 0
-    _2_H   = 0, 255, 0
-    _2_V   = 128,128,128
-    _2_RD  = 128,0,0
-    _2_LD  = 128,0,0
-    _2_LU  = 0,128,0
-    _2_RU  = 128,0,128
-    _1_L   = 0,128,128
-    _1_R   = 0,0,128
-    _1_D   = 192,192,192
-    _1_U   = 0,0,255
 
-    """
-    Black 	#000000 	(0,0,0)
-  	White 	#FFFFFF 	(255,255,255)
-  	Red 	#FF0000 	(255,0,0)
-  	Lime 	#00FF00 	(0,255,0)
-  	Blue 	#0000FF 	(0,0,255)
-  	Yellow 	#FFFF00 	(255,255,0)
-  	Cyan / Aqua 	#00FFFF 	(0,255,255)
-  	Magenta / Fuchsia 	#FF00FF 	(255,0,255)
-  	Silver 	#C0C0C0 	(192,192,192)
-  	Gray 	#808080 	(128,128,128)
-  	Maroon 	#800000 	(128,0,0)
-  	Olive 	#808000 	(128,128,0)
-  	Green 	#008000 	(0,128,0)
-  	Purple 	#800080 	(128,0,128)
-  	Teal 	#008080 	(0,128,128)
-  	Navy 	#000080 	(0,0,128)
-    BLACK = 0, 0, 0
-    WHITE = 255, 255, 255
-    CIEL = 0, 200, 255
-    RED = 255, 0, 0
-    ORANGE = 255, 100, 0
-    GREEN = 0, 255, 0
-    """
+    _0     = "_0"
+    _4     = "_4"
+    _3_UP  = "_3_UP"
+    _3_DO  = "_3_DO"
+    _3_RI  = "_3_RI"
+    _3_LE  = "_3_LE"
+    _2_H   = "_2_H"
+    _2_V   = "_2_V"
+    _2_RD  = "_2_RD"
+    _2_LD  = "_2_LD"
+    _2_LU  = "_2_LU"
+    _2_RU  = "_2_RU"
+    _1_L   = "_1_L"
+    _1_R   = "_1_R"
+    _1_D   = "_1_D"
+    _1_U   = "_1_U"
+    #ROAD TYPE
 
 
     def __init__(self, x, y):
@@ -67,7 +45,9 @@ class Pixel():
         return False
 
     def __repr__(self):
-        return 'x: {}, y: {} type {}'.format(str(self.x), str(self.y),self.type)
+
+        return 'x: {}, y: {} type {} road  type {}'.format(str(self.x),
+        str(self.y), self.type, self.road_type)
 
     """
     def set_neighbours(self, neighbours):
@@ -93,9 +73,41 @@ class Pixel():
         return result
     """
 
-    def display(self, fenetre, offset = Point(0,0))):
-        if self.road_type:
-            print(self.road_type)
-            color = pygame.Color(*self.road_type, 255 )
+    def display(self, fenetre, offset = Point(0,0),zoom = 10):
+        colors = {
+        self._0     : (0,0,0),
 
-            fenetre.set_at((self.x+offset.x, self.y+offset.y), color)
+        self._4     : (255,0,0),
+        # BLEU
+        self._3_UP  : (0, 0, 255),
+        self._3_DO  : (0, 0, 255),
+        self._3_RI  : (0, 0, 255),
+        self._3_LE  : (0, 0, 255),
+        # GREEN
+        self._2_H   : (0,255,10),
+        self._2_V   : (0,255,20),
+        self._2_RD  : (0,255,30),
+        self._2_LD  : (0,255,40),
+        self._2_LU  : (0,255,50),
+        self._2_RU  : (0,255,60),
+        # WHITE
+        self._1_L   : (255,255,255),
+        self._1_R   : (255,255,255),
+        self._1_D   : (255,255,255),
+        self._1_U   : (255,255,255)
+        }
+
+        if self.type == self.ROAD:
+            color = pygame.Color(*colors[self.road_type], 255 )
+        elif self.type == self.ROCK:
+            color = pygame.Color("grey")
+            #print(self.road_type)
+        x = self.x * zoom
+        y = self.y * zoom
+
+        for i in range(zoom):
+            for j in range(zoom):
+                if i == 0 or j == 0:
+                    fenetre.set_at((x+offset.x+i, y+offset.y+j), pygame.Color("black"))
+                else:
+                    fenetre.set_at((x+offset.x+i, y+offset.y+j), color)

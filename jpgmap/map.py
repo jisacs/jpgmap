@@ -51,15 +51,16 @@ class Map():
     def init_display(self):
             print("pygame INIT")
             pygame.init()
-            self.fenetre = pygame.display.set_mode((640, 480),RESIZABLE)
+
 
     def load(self, jpg_filename):
         print("Map load filename: " + jpg_filename)
         if jpg_filename:
-            print("load debug")
             self.pixels_color=imread(jpg_filename)
             # self.pixels_color.shape (53, 93, 3)
             self.jpg_filename = jpg_filename
+            h, w, c = self.pixels_color.shape
+            self.fenetre = pygame.display.set_mode((w*15, h*15),RESIZABLE)
             fond = pygame.image.load(self.jpg_filename).convert()
             self.fenetre.blit(fond, (0,0))
             self.set_pixels_map(self.pixels_color)
@@ -97,21 +98,15 @@ class Map():
     def set_pixels_map(self, pixels_color):
         self.h,self.w,c= pixels_color.shape
         self.pixels_map = [[Pixel(x,y) for y in range(self.h)] for x in range(self.w)]
-        #print('self.w {} self.h {}'.format(self.w, self.h))
         for x in range(self.w):
             for y in range(self.h):
                 pixel = self.pixels_map[x][y]
-                #print("DEBUG ADD Pixel x {}, y {} in tab[{}][{}]".format(pixel.x,pixel.y,x,y))
                 if self.is_a_white_pos(pixel, delta=20):
                     pixel.type = Pixel.ROAD
-                    #self.fenetre.set_at((x, y), pygame.Color("red"))
                 else:
                     pixel.type = Pixel.ROCK
-                    #self.fenetre.set_at((x, y), pygame.Color("green"))
 
 
-
-        #print('x len {}, y len {}'.format(len(self.pixels_map),len(self.pixels_map[0])))
     def get_pixels_ordered(self):
         """
         return a list order  by x,y -> 0,0 0,1 0,2 0,3 ... 1,0 1,1 1,2
@@ -122,45 +117,48 @@ class Map():
     def analyse_map(self):
         pixels = self.get_pixels_ordered()
         for pixel in pixels:
-            neighbours_road, neighbours_road_flags = self.get_neighbours_road(pixel)
-            #print(" pixel {} neighbours_road_flags {}".format(pixel, neighbours_road_flags))
-            if len(neighbours_road) == 1:
-                if neighbours_road_flags["RIGHT"]:
-                    pixel.road_type = Pixel._1_R
-                elif neighbours_road_flags["LEFT"]:
-                    pixel.road_type = Pixel._1_L
-                elif  neighbours_road_flags["UP"]:
-                    pixel.road_type = Pixel._1_U
+            if pixel.type == Pixel.ROAD:
+                neighbours_road, neighbours_road_flags = self.get_neighbours_road(pixel)
+                if len(neighbours_road) == 1:
+                    if neighbours_road_flags["RIGHT"]:
+                        pixel.road_type = Pixel._1_R
+                    elif neighbours_road_flags["LEFT"]:
+                        pixel.road_type = Pixel._1_L
+                    elif  neighbours_road_flags["UP"]:
+                        pixel.road_type = Pixel._1_U
+                    else:
+                        pixel.road_type = Pixel._1_D
+
+                elif len(neighbours_road) == 2:
+                    if neighbours_road_flags["RIGHT"] and  neighbours_road_flags["LEFT"] :
+                        pixel.road_type = Pixel._2_H
+                    elif neighbours_road_flags["UP"] and  neighbours_road_flags["DOWN"] :
+                        pixel.road_type = Pixel._2_V
+                    elif neighbours_road_flags["DOWN"] and  neighbours_road_flags["RIGHT"] :
+                        pixel.road_type = Pixel._2_RD
+                    elif neighbours_road_flags["DOWN"] and  neighbours_road_flags["LEFT"] :
+                        pixel.road_type = Pixel._2_LD
+                    elif neighbours_road_flags["UP"] and  neighbours_road_flags["LEFT"] :
+                        pixel.road_type = Pixel._2_LU
+                    elif neighbours_road_flags["UP"] and  neighbours_road_flags["RIGHT"] :
+                        pixel.road_type = Pixel._2_RU
+
+                elif len(neighbours_road) == 3:
+                    if neighbours_road_flags["RIGHT"] and  neighbours_road_flags["LEFT"] and  neighbours_road_flags["UP"]:
+                        pixel.road_type = Pixel._3_UP
+                    elif neighbours_road_flags["RIGHT"] and  neighbours_road_flags["LEFT"] and  neighbours_road_flags["DOWN"]:
+                        pixel.road_type = Pixel._3_DO
+                    elif neighbours_road_flags["RIGHT"] and  neighbours_road_flags["UP"] and  neighbours_road_flags["DOWN"]:
+                        pixel.road_type = Pixel._3_RI
+                    else:
+                        pixel.road_type = Pixel._3_LE
+
+                elif len(neighbours_road) == 4:
+                    pixel.road_type = Pixel._4
+
                 else:
-                    pixel.road_type = Pixel._1_D
-
-            elif len(neighbours_road) == 2:
-                if neighbours_road_flags["RIGHT"] and  neighbours_road_flags["LEFT"] :
-                    pixel.road_type = Pixel._2_H
-                elif neighbours_road_flags["UP"] and  neighbours_road_flags["DOWN"] :
-                    pixel.road_type = Pixel._2_V
-                elif neighbours_road_flags["DOWN"] and  neighbours_road_flags["RIGHT"] :
-                    pixel.road_type = Pixel._2_RD
-                elif neighbours_road_flags["DOWN"] and  neighbours_road_flags["LEFT"] :
-                    pixel.road_type = Pixel._2_LD
-                elif neighbours_road_flags["UP"] and  neighbours_road_flags["LEFT"] :
-                    pixel.road_type = Pixel._2_LU
-                elif neighbours_road_flags["UP"] and  neighbours_road_flags["RIGHT"] :
-                    pixel.road_type = Pixel._2_RU
-
-            elif len(neighbours_road) == 3:
-                if neighbours_road_flags["RIGHT"] and  neighbours_road_flags["LEFT"] and  neighbours_road_flags["UP"]:
-                    pixel.road_type = Pixel._3_UP
-                elif neighbours_road_flags["RIGHT"] and  neighbours_road_flags["LEFT"] and  neighbours_road_flags["DOWN"]:
-                    pixel.road_type = Pixel._3_DO
-                elif neighbours_road_flags["RIGHT"] and  neighbours_road_flags["UP"] and  neighbours_road_flags["DOWN"]:
-                    pixel.road_type = Pixel._3_RI
-                else:
-                    pixel.road_type = Pixel._3_LE
-
-            elif len(neighbours_road) == 4:
-                pixel.road_type = Pixel._4
-
+                    pixel.road_type = Pixel._0
+                print("analyse_map: -> pixel {}".format(pixel))
 
 
     def set_pixel(self, pixel):
@@ -173,40 +171,36 @@ class Map():
     def get_neighbours(self, pixel):
         result = list()
         neighbours_road_flags = {"UP":False, "DOWN":False, "LEFT":False, "RIGHT":False }
-        try:
+        if pixel.x + 1 < self.w:
             p = self.pixels_map[pixel.x+1][pixel.y]
             result.append(p)
             if p.type == Pixel.ROAD:
                 neighbours_road_flags["RIGHT"]=True
-        except IndexError:
-            pass
-        try:
+
+        if pixel.x - 1 >= 0:
             p = self.pixels_map[pixel.x-1][pixel.y]
             result.append(p)
             if p.type == Pixel.ROAD:
                 neighbours_road_flags["LEFT"]=True
-        except IndexError:
-            pass
-        try:
+
+        if pixel.y - 1 >= 0:
             p = self.pixels_map[pixel.x][pixel.y-1]
             result.append(p)
             if p.type == Pixel.ROAD:
                 neighbours_road_flags["UP"]=True
-        except IndexError:
-            pass
-        try:
+        if pixel.y + 1 < self.h:
             p=self.pixels_map[pixel.x][pixel.y+1]
+            result.append(p)
             if p.type == Pixel.ROAD:
                 neighbours_road_flags["DOWN"]=True
-            result.append(p)
-        except IndexError:
-            pass
+
         return result, neighbours_road_flags
 
 
     def get_neighbours_road(self, pixel):
         result = list()
         neighbours, neighbours_road_flags = self.get_neighbours(pixel)
+
         for n in neighbours:
             if n.type == Pixel.ROAD:
                 result.append(n)
@@ -217,7 +211,6 @@ class Map():
         for x in range(self.w):
             for y in range(self.h):
                 if self.pixels_map[x][y].type == Pixel.ROAD:
-                    print("find_a_white_pos x {}, y {}".format(x,y))
                     return self.pixels_map[x][y]
 
 
