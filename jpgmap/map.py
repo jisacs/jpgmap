@@ -9,6 +9,7 @@ from pygame.locals import *
 from .road import Road
 from .point import Point
 from .pixel import Pixel
+from .tools import printProgressBar
 import sys
 
 
@@ -47,6 +48,7 @@ class Map():
         self.fenetre = None
         self.init_display()
         self.roads = list()
+        self.zoom = 10
 
     def init_display(self):
             print("pygame INIT")
@@ -116,7 +118,9 @@ class Map():
 
     def analyse_map(self):
         pixels = self.get_pixels_ordered()
-        for pixel in pixels:
+        nb_pix = len(pixels)
+        for index, pixel in enumerate(pixels):
+            printProgressBar(index, nb_pix, prefix = 'Analyse map:', suffix = 'Complete', length = 50)
             if pixel.type == Pixel.ROAD:
                 neighbours_road, neighbours_road_flags = self.get_neighbours_road(pixel)
                 if len(neighbours_road) == 1:
@@ -158,7 +162,7 @@ class Map():
 
                 else:
                     pixel.road_type = Pixel._0
-                print("analyse_map: -> pixel {}".format(pixel))
+
 
 
     def set_pixel(self, pixel):
@@ -223,6 +227,9 @@ class Map():
 
 
     def display(self):
-        for pixel in self.get_pixels_ordered():
-            pixel.display(self.fenetre, offset=Point(0, self.h + 10))
+        pixels = self.get_pixels_ordered()
+        nb_pix = len(pixels)
+        for index, pixel in enumerate(pixels):
+            printProgressBar(index, nb_pix, prefix = 'Display Pixel:', suffix = 'Complete', length = 50)
+            pixel.display(self.fenetre, offset=Point(0, self.h + 10), zoom=self.zoom)
         pygame.display.flip()
