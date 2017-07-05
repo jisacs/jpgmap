@@ -40,5 +40,13 @@ class Engine():
                 for event in pygame.event.get():   #On parcours la liste de tous les événements reçus
                     if event.type == QUIT:     #Si un de ces événements est de type QUIT
                         continuer = 0      #On arrête la boucle
-                    else:
+                    elif  event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_UP:
+                            self.map.zoom+=2
+                        elif event.key == pygame.K_DOWN:
+                            self.map.zoom-=2
+                            if self.map.zoom < 0: self.map.zoom = 1
+                        self.map.display()
+                    elif event.type == VIDEORESIZE:
+                        self.map.change_display_size(event.w, event.h)
                         self.map.display()

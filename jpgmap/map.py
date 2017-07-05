@@ -53,18 +53,18 @@ class Map():
     def init_display(self):
             print("pygame INIT")
             pygame.init()
+            self.change_display_size(800, 600)
 
 
     def load(self, jpg_filename):
         print("Map load filename: " + jpg_filename)
         if jpg_filename:
             self.pixels_color=imread(jpg_filename)
-            # self.pixels_color.shape (53, 93, 3)
+            # self.pixels_color.shape
             self.jpg_filename = jpg_filename
             h, w, c = self.pixels_color.shape
-            self.fenetre = pygame.display.set_mode((w*15, h*15),RESIZABLE)
-            fond = pygame.image.load(self.jpg_filename).convert()
-            self.fenetre.blit(fond, (0,0))
+            self.fond = pygame.image.load(self.jpg_filename).convert()
+            self.fenetre.blit(self.fond, (0,0))
             self.set_pixels_map(self.pixels_color)
 
             #pygame.surfarray.blit_array(self.fenetre, self.pixels_color)
@@ -227,9 +227,25 @@ class Map():
 
 
     def display(self):
+        self.fenetre.fill((0, 0, 0))
         pixels = self.get_pixels_ordered()
         nb_pix = len(pixels)
         for index, pixel in enumerate(pixels):
-            printProgressBar(index, nb_pix, prefix = 'Display Pixel:', suffix = 'Complete', length = 50)
-            pixel.display(self.fenetre, offset=Point(0, self.h + 10), zoom=self.zoom)
+            #printProgressBar(index, nb_pix, prefix = 'Display Pixel:', suffix = 'Complete', length = 50)
+            #pixel.display(self.fenetre, offset=Point(0, self.h + 10), zoom=self.zoom)
+            pixel.display(self.fenetre, offset=Point(0, 0), zoom=self.zoom)
+        self.fenetre.blit(self.fond, (0, 0))
         pygame.display.flip()
+
+    def change_display_size(self, w, h):
+        self.fenetre = pygame.display.set_mode((w, h),
+                                               pygame.RESIZABLE)
+        if self.pixels_map:
+            zoom = int((h) / len(self.pixels_map[0]))
+            zoom_z = int((w) / len(self.pixels_map))
+            if zoom_z < zoom: zoom = zoom_z
+            #print('w {}, h {}, min {}, compare {}'.format(w, h, min, compare))
+
+            self.zoom = zoom
+            if self.zoom < 2: self.zoom = 2
+
