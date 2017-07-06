@@ -292,20 +292,29 @@ class Map():
     def click(self, x, y):
         try:
             pixel = self.pixels_map[x][y]
-            if pixel.selected == True:
-                pixel.selected = False
-            else:
-                pixel.selected = True
-            selected = list()
-            for pixel in self.get_pixels_road_ordered():
-                if pixel.selected:
-                    selected.append(pixel)
-            if len(selected) == 2:
-                paths = self.graph.get_paths(selected)
-                for path in paths:
-                    for points in path:
-                        self.pixels_map[points[0]][points[1]].selected = True
-                self.display()
+            if pixel.type == Pixel.ROAD:
+                if pixel.selected == True:
+                    pixel.selected = False
+                else:
+                    pixel.selected = True
+                selected = list()
+                for pixel in self.get_pixels_road_ordered():
+                    if pixel.selected:
+                        selected.append(pixel)
+
+                ## START PATH FIND
+                if len(selected) == 2:
+                    shorted_path = None
+                    paths = self.graph.get_paths(selected)
+                    for path in paths:
+                        if not shorted_path:
+                            shorted_path = path
+                        elif len(path) < len(shorted_path):
+                            shorted_path = path
+                    if shorted_path:
+                        for points in shorted_path:
+                            self.pixels_map[points[0]][points[1]].selected = True
+                        self.display()
 
             self.display()
         except IndexError:
