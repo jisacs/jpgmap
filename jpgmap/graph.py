@@ -12,10 +12,9 @@ class Graph():
 
 
         for pixel in _map.get_pixels_road_ordered():
-            if len(pixel.neighbours) < 7:
-                neighbourgs = _map.get_neighbours_road(pixel)
-                for neighbourg in  neighbourgs:
-                    self.gnx.add_edge(pixel.pos(), neighbourg.pos())
+            neighbourgs = _map.get_neighbours_road(pixel)
+            for neighbourg in  neighbourgs:
+                self.gnx.add_edge(pixel.pos(), neighbourg.pos())
 
 
     def get_paths(self, pixels):

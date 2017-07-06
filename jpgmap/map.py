@@ -361,5 +361,5 @@ class Map():
 
     def unselect_all_pixel(self):
         for pixel in self.get_selected_pixels():
-            pixel.selected=Fasle
+            pixel.selected=False
             self.display_pixel(pixel)

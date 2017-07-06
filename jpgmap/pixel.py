@@ -97,9 +97,6 @@ class Pixel():
             color = pygame.Color("white")
         elif self.type == self.ROCK:
             color = pygame.Color("grey")
-        if (self.neighbours):
-            if len(self.neighbours) > 7:
-                color = pygame.Color("green")
         if self.selected:
             color = pygame.Color("black")
         pygame.draw.rect(fenetre, color, (x + offset.x, y + offset.y, zoom, zoom))
