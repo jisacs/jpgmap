@@ -304,21 +304,16 @@ class Map():
 
                 ## START PATH FIND
                 if len(selected) == 2:
-                    shorted_path = None
-                    paths = self.graph.get_paths(selected)
-                    for path in paths:
-                        if not shorted_path:
-                            shorted_path = path
-                        elif len(path) < len(shorted_path):
-                            shorted_path = path
-                    if shorted_path:
-                        for points in shorted_path:
+                    path = self.graph.get_paths(selected)
+                    if path:
+                        for points in path:
                             self.pixels_map[points[0]][points[1]].selected = True
                         self.display()
 
             self.display()
         except IndexError:
             pass
+
 
     def unselected(self, pixels=None):
 

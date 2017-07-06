@@ -20,7 +20,7 @@ class Graph():
         start = pixels[0]
         end = pixels[1]
         try:
-            return  nx.all_simple_paths(self.gnx, start.pos(), end.pos())
+            return  nx.shortest_path(self.gnx, start.pos(), end.pos())
         except networkx.exception.NetworkXError:
             print("No Path")
             return None
