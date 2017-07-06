@@ -10,7 +10,14 @@ class Pixel():
     #ROAD TYPE
 
     _0     = "_0"
+    _1     = "_1"
+    _2     = "_2"
+    _3     = "_3"
     _4     = "_4"
+    _5     = "_5"
+    _6     = "_6"
+    _7     = "_7"
+    _8     = "_8"
     _3_UP  = "_3_UP"
     _3_DO  = "_3_DO"
     _3_RI  = "_3_RI"
@@ -40,6 +47,7 @@ class Pixel():
         self.road_type = self.UNKNOWN
         #self.neighbours = None
         self.selected = False
+        self.neighbours = None
 
 
     def __eq__(self, rhs):
@@ -51,6 +59,10 @@ class Pixel():
 
         return 'x: {}, y: {} type {} road  type {}'.format(str(self.x),
         str(self.y), self.type, self.road_type)
+
+
+    def set_neighours(self, neighbourgs):
+        self.neighbours = neighbourgs
 
     def pos(self):
         return self.x, self.y
@@ -103,8 +115,21 @@ class Pixel():
         }
 
         if self.type == self.ROAD:
-            #color = pygame.Color(*colors[self.road_type], 255 )
-            color = pygame.Color("white")
+            """"
+            if not self.road_type == self.UNKNOWN:
+                color = pygame.Color(*colors[self.road_type], 255 )
+            else:
+                color = pygame.Color("white")
+            """
+            if len(self.neighbours) > 7:
+                color = pygame.Color("green")
+            else:
+                if self.neighbours:
+                    value = len(self.neighbours) * 10
+                    color = pygame.Color("white")#value, value, value, 255)
+                else:
+                    color = pygame.Color("white")
+            #color = pygame.Color("white")
         elif self.type == self.ROCK:
             color = pygame.Color("grey")
             #print(self.road_type)

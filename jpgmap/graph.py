@@ -7,10 +7,12 @@ class Graph():
         self.gnx = nx.Graph()
 
         for pixel in _map.get_pixels_road_ordered():
-            self.gnx.add_node(pixel.pos())
+            if len(pixel.neighbours) < 7:
+                self.gnx.add_node(pixel.pos())
 
 
         for pixel in _map.get_pixels_road_ordered():
+            if len(pixel.neighbours) < 7:
                 neighbourgs = _map.get_neighbours_road(pixel)
                 for neighbourg in  neighbourgs:
                     self.gnx.add_edge(pixel.pos(), neighbourg.pos())

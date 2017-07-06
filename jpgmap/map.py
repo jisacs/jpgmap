@@ -136,6 +136,13 @@ class Map():
 
     def analyse_map(self):
         pixels = self.get_pixels_ordered()
+        for pixel in pixels:
+            if pixel.type == Pixel.ROAD:
+                pixel.set_neighours(self.get_neighbours_road(pixel))
+
+    """
+    def analyse_map(self):
+        pixels = self.get_pixels_ordered()
         nb_pix = len(pixels)
         for index, pixel in enumerate(pixels):
             printProgressBar(index, nb_pix, prefix = 'Analyse map:', suffix = 'Complete', length = 50)
@@ -181,7 +188,7 @@ class Map():
 
                 else:
                     pixel.road_type = Pixel._0
-
+                """
 
 
     def set_pixel(self, pixel):
@@ -318,9 +325,10 @@ class Map():
                 if len(selected) == 2:
                     try:
                         path = self.graph.get_paths(selected)
-                        for points in path:
-                            self.pixels_map[points[0]][points[1]].selected = True
-                        self.display()
+                        if path:
+                            for points in path:
+                                self.pixels_map[points[0]][points[1]].selected = True
+                            self.display()
                     except networkx.exception.NetworkXNoPath:
                         pass
 
