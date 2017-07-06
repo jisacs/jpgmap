@@ -12,6 +12,8 @@ from .pixel import Pixel
 from .tools import printProgressBar
 from .graph import Graph
 import networkx
+from time import time
+
 
 
 import sys
@@ -52,14 +54,16 @@ class Map():
         self.fenetre = None
         self.init_display()
         self.roads = list()
-        self.zoom = 10
+        self.zoom = 1
+        self.last_display_time = 0
+        self.last_display_size_time=0
 
         self.graph = None
 
     def init_display(self):
             print("pygame INIT")
             pygame.init()
-            self.change_display_size(800, 600)
+            #self.change_display_size(800, 600)
 
 
     def load(self, jpg_filename):
@@ -69,10 +73,10 @@ class Map():
             # self.pixels_color.shape
             self.jpg_filename = jpg_filename
             h, w, c = self.pixels_color.shape
+            self.change_display_size(h, w)
             self.fond = pygame.image.load(self.jpg_filename).convert()
             self.fenetre.blit(self.fond, (0,0))
             self.set_pixels_map(self.pixels_color)
-
             #pygame.surfarray.blit_array(self.fenetre, self.pixels_color)
             pygame.display.flip()
             self.analyse_map()
@@ -285,14 +289,20 @@ class Map():
 
 
     def display(self):
-        self.fenetre.fill((0, 0, 0))
-        pixels = self.get_pixels_ordered()
-        nb_pix = len(pixels)
-        for index, pixel in enumerate(pixels):
-            printProgressBar(index, nb_pix, prefix = 'Display Pixel:', suffix = 'Complete', length = 40)
-            pixel.display(self.fenetre, offset=Point(0, 0), zoom=self.zoom)
-        pygame.display.flip()
-        print("")
+
+        now = time()
+
+        if now - self.last_display_time > .2:
+            self.fenetre.fill((0, 0, 0))
+            pixels = self.get_pixels_ordered()
+            nb_pix = len(pixels)
+            for index, pixel in enumerate(pixels):
+                printProgressBar(index, nb_pix, prefix = 'Display Pixel:', suffix = 'Complete', length = 40)
+                pixel.display(self.fenetre, offset=Point(0, 0), zoom=self.zoom)
+            pygame.display.flip()
+            print("")
+            self.last_display_time = now
+
 
     def display_pixel(self, pixel):
         pixel.display(self.fenetre, offset=Point(0, 0), zoom=self.zoom)
@@ -301,16 +311,23 @@ class Map():
 
 
     def change_display_size(self, w, h):
-        self.fenetre = pygame.display.set_mode((w, h),
-                                               pygame.RESIZABLE)
-        if self.pixels_map:
-            zoom = int((h) / len(self.pixels_map[0]))
-            zoom_z = int((w) / len(self.pixels_map))
-            if zoom_z < zoom: zoom = zoom_z
-            #print('w {}, h {}, min {}, compare {}'.format(w, h, min, compare))
+        now = time()
+        # print(now - self.last_display_time)
+        if now - self.last_display_size_time > .2:
+            self.fenetre = pygame.display.set_mode((w, h),
+                                                   pygame.RESIZABLE)
+            if self.pixels_map:
+                zoom = int((h) / len(self.pixels_map[0]))
+                zoom_z = int((w) / len(self.pixels_map))
+                if zoom_z < zoom: zoom = zoom_z
+                #print('w {}, h {}, min {}, compare {}'.format(w, h, min, compare))
 
-            self.zoom = zoom
-            if self.zoom < 2: self.zoom = 2
+                self.zoom = zoom
+                if self.zoom < 2: self.zoom = 2
+                #print("zoom {}".format(self.zoom ))
+                pygame.display.flip()
+            self.last_display_size_time = now
+
 
 
     def click(self, x, y):

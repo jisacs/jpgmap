@@ -45,10 +45,10 @@ class Engine():
                         continuer = 0      #On arrête la boucle
                     elif  event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_UP:
-                            self.map.zoom+=2
+                            self.map.zoom*=2
                             self.map.display()
                         elif event.key == pygame.K_DOWN:
-                            self.map.zoom-=2
+                            self.map.zoom/=2
                             self.map.display()
                         elif event.key == pygame.K_SPACE:
                             self.map.unselected()
@@ -57,8 +57,13 @@ class Engine():
 
 
                     elif event.type == VIDEORESIZE:
-                        self.map.change_display_size(event.w, event.h)
-                        self.map.display()
+
+                        if event.w != self.map.w or event.h != self.map.h:
+                            print("(event.w {}, event.h {})".format(event.w, event.h))
+                            self.map.change_display_size(event.w, event.h)
+                            self.map.display()
+
+
                     elif event.type == pygame.MOUSEBUTTONUP:
                         pos = pygame.mouse.get_pos()
                         self.map.click(int(pos[0]/self.map.zoom), int(pos[1]/self.map.zoom))
