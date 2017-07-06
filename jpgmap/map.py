@@ -301,8 +301,21 @@ class Map():
                 if pixel.selected:
                     selected.append(pixel)
             if len(selected) == 2:
-                self.graph.get_path(selected)
+                paths = self.graph.get_paths(selected)
+                for path in paths:
+                    for points in path:
+                        self.pixels_map[points[0]][points[1]].selected = True
+                self.display()
 
             self.display()
         except IndexError:
             pass
+
+    def unselected(self, pixels=None):
+
+        if not pixels:
+            for pixel in self.get_pixels_road_ordered():
+                pixel.selected=False
+        else:
+            for pixel in pixels:
+                pixel.selected=False

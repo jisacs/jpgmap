@@ -16,11 +16,11 @@ class Graph():
                     self.gnx.add_edge(pixel.pos(), neighbourg.pos())
 
 
-    def get_path(self, pixels):
+    def get_paths(self, pixels):
         start = pixels[0]
         end = pixels[1]
         try:
-            for path in nx.all_simple_paths(self.gnx, start.pos(), end.pos()):
-                print("PATH {}".format(path))
+            return  nx.all_simple_paths(self.gnx, start.pos(), end.pos())
         except networkx.exception.NetworkXError:
             print("No Path")
+            return None
