@@ -360,6 +360,6 @@ class Map():
 
 
     def unselect_all_pixel(self):
-        for pixel in self.get_selected_pixels();
+        for pixel in self.get_selected_pixels():
             pixel.selected=Fasle
             self.display_pixel(pixel)
