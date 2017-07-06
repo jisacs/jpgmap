@@ -39,6 +39,7 @@ class Pixel():
         self.type = self.UNKNOWN
         self.road_type = self.UNKNOWN
         #self.neighbours = None
+        self.selected = False
 
 
     def __eq__(self, rhs):
@@ -106,8 +107,11 @@ class Pixel():
         elif self.type == self.ROCK:
             color = pygame.Color("grey")
             #print(self.road_type)
+        if self.selected:
+            color = pygame.Color("black")
         x = self.x * zoom
         y = self.y * zoom
+
 
         for i in range(zoom):
             for j in range(zoom):

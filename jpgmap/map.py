@@ -10,6 +10,9 @@ from .road import Road
 from .point import Point
 from .pixel import Pixel
 from .tools import printProgressBar
+from .graph import Graph
+
+
 import sys
 
 
@@ -50,6 +53,8 @@ class Map():
         self.roads = list()
         self.zoom = 10
 
+        self.graph = None
+
     def init_display(self):
             print("pygame INIT")
             pygame.init()
@@ -70,6 +75,7 @@ class Map():
             #pygame.surfarray.blit_array(self.fenetre, self.pixels_color)
             pygame.display.flip()
             self.analyse_map()
+            self.graph = Graph(self)
 
     """
     In [1]: w, h = 8, 5;
@@ -282,3 +288,21 @@ class Map():
             self.zoom = zoom
             if self.zoom < 2: self.zoom = 2
 
+
+    def click(self, x, y):
+        try:
+            pixel = self.pixels_map[x][y]
+            if pixel.selected == True:
+                pixel.selected = False
+            else:
+                pixel.selected = True
+            selected = list()
+            for pixel in self.get_pixels_road_ordered():
+                if pixel.selected:
+                    selected.append(pixel)
+            if len(selected) == 2:
+                self.graph.get_path(selected)
+
+            self.display()
+        except IndexError:
+            pass

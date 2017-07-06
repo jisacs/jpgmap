@@ -1,6 +1,6 @@
 import networkx as nx
 from .pixel import Pixel
-
+import networkx
 
 class Graph():
     def __init__(self, _map):
@@ -9,18 +9,18 @@ class Graph():
         for pixel in _map.get_pixels_road_ordered():
             self.gnx.add_node(pixel.pos())
 
+
         for pixel in _map.get_pixels_road_ordered():
                 neighbourgs = _map.get_neighbours_road(pixel)
                 for neighbourg in  neighbourgs:
                     self.gnx.add_edge(pixel.pos(), neighbourg.pos())
-                    #print("Add edge {} {}".format(pixel.pos(), neighbourg.pos()))
-
-        start = _map.get_pixels_ordered()[0]
-        end =_map.get_pixels_ordered()[-1]
-        print("Start Stop edge {} {}".format(start.pos(), end.pos()))
-        for  path  in nx.all_simple_paths(self.gnx, (2,2), (7,7)):
-            print("PATH {}".format(path))
 
 
-
-
+    def get_path(self, pixels):
+        start = pixels[0]
+        end = pixels[1]
+        try:
+            for path in nx.all_simple_paths(self.gnx, start.pos(), end.pos()):
+                print("PATH {}".format(path))
+        except networkx.exception.NetworkXError:
+            print("No Path")

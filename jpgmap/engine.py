@@ -5,7 +5,7 @@ from .map import Point
 import pygame
 from pygame.locals import *
 from enum import Enum
-from .graph import Graph
+
 
 
 class Dir(Enum):
@@ -26,8 +26,6 @@ class Engine():
             print("Engine filename [{}]".format(image_filename))
             self.map = Map()
             self.map.load(image_filename)
-
-            self.graph = Graph(self.map)
 
 
 
@@ -55,3 +53,6 @@ class Engine():
                     elif event.type == VIDEORESIZE:
                         self.map.change_display_size(event.w, event.h)
                         self.map.display()
+                    elif event.type == pygame.MOUSEBUTTONUP:
+                        pos = pygame.mouse.get_pos()
+                        self.map.click(int(pos[0]/self.map.zoom), int(pos[1]/self.map.zoom))
