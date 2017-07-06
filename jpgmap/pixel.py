@@ -91,6 +91,20 @@ class Pixel():
     """
 
     def display(self, fenetre, offset = Point(0,0),zoom = 10):
+        x = self.x * zoom
+        y = self.y * zoom
+        if self.type == self.ROAD:
+            color = pygame.Color("white")
+        elif self.type == self.ROCK:
+            color = pygame.Color("grey")
+        if (self.neighbours):
+            if len(self.neighbours) > 7:
+                color = pygame.Color("green")
+        if self.selected:
+            color = pygame.Color("black")
+        pygame.draw.rect(fenetre, color, (x + offset.x, y + offset.y, zoom, zoom))
+
+        """
         colors = {
         self._0     : (0,0,0),
 
@@ -113,14 +127,10 @@ class Pixel():
         self._1_D   : (255,255,255),
         self._1_U   : (255,255,255)
         }
-
+        """
+        """
         if self.type == self.ROAD:
-            """"
-            if not self.road_type == self.UNKNOWN:
-                color = pygame.Color(*colors[self.road_type], 255 )
-            else:
-                color = pygame.Color("white")
-            """
+
             if len(self.neighbours) > 7:
                 color = pygame.Color("green")
             else:
@@ -137,11 +147,12 @@ class Pixel():
             color = pygame.Color("black")
         x = self.x * zoom
         y = self.y * zoom
-
-
+        """
+        """
         for i in range(zoom):
             for j in range(zoom):
                 if i == 0 or j == 0:
                     fenetre.set_at((x+offset.x+i, y+offset.y+j), pygame.Color("black"))
                 else:
                     fenetre.set_at((x+offset.x+i, y+offset.y+j), color)
+        """

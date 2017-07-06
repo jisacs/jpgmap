@@ -289,11 +289,18 @@ class Map():
         pixels = self.get_pixels_ordered()
         nb_pix = len(pixels)
         for index, pixel in enumerate(pixels):
-            #printProgressBar(index, nb_pix, prefix = 'Display Pixel:', suffix = 'Complete', length = 50)
+            printProgressBar(index, nb_pix, prefix = 'Display Pixel:', suffix = 'Complete', length = 40)
             #pixel.display(self.fenetre, offset=Point(0, self.h + 10), zoom=self.zoom)
             pixel.display(self.fenetre, offset=Point(0, 0), zoom=self.zoom)
-        self.fenetre.blit(self.fond, (0, 0))
+        #self.fenetre.blit(self.fond, (0, 0))
         pygame.display.flip()
+        print("")
+
+    def display_pixel(self, pixel):
+        pixel.display(self.fenetre, offset=Point(0, 0), zoom=self.zoom)
+        #self.fenetre.blit(self.fond, (0, 0))
+        pygame.display.flip()
+
 
     def change_display_size(self, w, h):
         self.fenetre = pygame.display.set_mode((w, h),
@@ -309,6 +316,7 @@ class Map():
 
 
     def click(self, x, y):
+
         try:
             pixel = self.pixels_map[x][y]
             if pixel.type == Pixel.ROAD:
@@ -316,11 +324,11 @@ class Map():
                     pixel.selected = False
                 else:
                     pixel.selected = True
+                self.display_pixel(pixel)
                 selected = list()
                 for pixel in self.get_pixels_road_ordered():
                     if pixel.selected:
                         selected.append(pixel)
-
                 ## START PATH FIND
                 if len(selected) == 2:
                     try:
@@ -328,11 +336,9 @@ class Map():
                         if path:
                             for points in path:
                                 self.pixels_map[points[0]][points[1]].selected = True
-                            self.display()
+                                self.display_pixel(self.pixels_map[points[0]][points[1]])
                     except networkx.exception.NetworkXNoPath:
                         pass
-
-            self.display()
         except IndexError:
             pass
 
