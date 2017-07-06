@@ -11,6 +11,7 @@ from .point import Point
 from .pixel import Pixel
 from .tools import printProgressBar
 from .graph import Graph
+import networkx
 
 
 import sys
@@ -209,6 +210,17 @@ class Map():
         if pixel.y + 1 < self.h:
             result.append(self.pixels_map[pixel.x][pixel.y+1])
 
+        if pixel.x + 1 < self.w and  pixel.y - 1 >= 0:
+            result.append(self.pixels_map[pixel.x+1][pixel.y-1])
+
+        if pixel.x - 1 >= 0  and  pixel.y - 1 >= 0:
+            result.append(self.pixels_map[pixel.x-1][pixel.y-1])
+
+        if pixel.y - 1 >= 0 and  pixel.x - 1 :
+            result.append(self.pixels_map[pixel.x-1][pixel.y-1])
+
+        if pixel.y + 1 < self.h and  pixel.x - 1 :
+            result.append(self.pixels_map[pixel.x-1][pixel.y+1])
 
         return result
 
@@ -304,11 +316,13 @@ class Map():
 
                 ## START PATH FIND
                 if len(selected) == 2:
-                    path = self.graph.get_paths(selected)
-                    if path:
+                    try:
+                        path = self.graph.get_paths(selected)
                         for points in path:
                             self.pixels_map[points[0]][points[1]].selected = True
                         self.display()
+                    except networkx.exception.NetworkXNoPath:
+                        pass
 
             self.display()
         except IndexError:

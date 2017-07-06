@@ -103,7 +103,8 @@ class Pixel():
         }
 
         if self.type == self.ROAD:
-            color = pygame.Color(*colors[self.road_type], 255 )
+            #color = pygame.Color(*colors[self.road_type], 255 )
+            color = pygame.Color("white")
         elif self.type == self.ROCK:
             color = pygame.Color("grey")
             #print(self.road_type)
