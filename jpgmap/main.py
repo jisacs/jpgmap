@@ -25,7 +25,7 @@ def proclamer():
         retourne None, car tout le monde say que "Ex nihilo nihil"
     """
 
-    engine = Engine("raw/simple.jpg") # Width 93, Heigh 53
+    engine = Engine("raw/small.jpg") # Width 93, Heigh 53
 
     engine.run()
 
