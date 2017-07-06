@@ -290,9 +290,7 @@ class Map():
         nb_pix = len(pixels)
         for index, pixel in enumerate(pixels):
             printProgressBar(index, nb_pix, prefix = 'Display Pixel:', suffix = 'Complete', length = 40)
-            #pixel.display(self.fenetre, offset=Point(0, self.h + 10), zoom=self.zoom)
             pixel.display(self.fenetre, offset=Point(0, 0), zoom=self.zoom)
-        #self.fenetre.blit(self.fond, (0, 0))
         pygame.display.flip()
         print("")
 
@@ -346,8 +344,22 @@ class Map():
     def unselected(self, pixels=None):
 
         if not pixels:
-            for pixel in self.get_pixels_road_ordered():
-                pixel.selected=False
+            self.unselect_all_pixel()
         else:
             for pixel in pixels:
                 pixel.selected=False
+                self.display_pixel(pixel)
+
+
+    def get_selected_pixels(self):
+        selected = list()
+        for pixel in self.get_pixels_road_ordered():
+            if pixel.selected:
+                selected.append(pixel)
+        return selected
+
+
+    def unselect_all_pixel(self):
+        for pixel in self.get_selected_pixels();
+            pixel.selected=Fasle
+            self.display_pixel(pixel)

@@ -46,12 +46,16 @@ class Engine():
                     elif  event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_UP:
                             self.map.zoom+=2
+                            self.map.display()
                         elif event.key == pygame.K_DOWN:
                             self.map.zoom-=2
+                            self.map.display()
                         elif event.key == pygame.K_SPACE:
                             self.map.unselected()
-                            if self.map.zoom < 0: self.map.zoom = 1
-                        self.map.display()
+
+                        if self.map.zoom < 0: self.map.zoom = 1
+
+
                     elif event.type == VIDEORESIZE:
                         self.map.change_display_size(event.w, event.h)
                         self.map.display()
