@@ -115,6 +115,17 @@ class Map():
         """
         return list(chain.from_iterable(zip(*self.pixels_map)))
 
+    def get_pixels_road_ordered(self):
+        """
+        return a list order  by x,y -> 0,0 0,1 0,2 0,3 ... 1,0 1,1 1,2 of
+        Pixel ROAD only
+        """
+        ordered_pixels = list(chain.from_iterable(zip(*self.pixels_map)))
+        result = list()
+        for pixel in ordered_pixels:
+            if pixel.type == Pixel.ROAD:
+                result.append(pixel)
+        return result
 
     def analyse_map(self):
         pixels = self.get_pixels_ordered()
@@ -122,7 +133,8 @@ class Map():
         for index, pixel in enumerate(pixels):
             printProgressBar(index, nb_pix, prefix = 'Analyse map:', suffix = 'Complete', length = 50)
             if pixel.type == Pixel.ROAD:
-                neighbours_road, neighbours_road_flags = self.get_neighbours_road(pixel)
+                neighbours_road = self.get_neighbours_road(pixel)
+                neighbours_road_flags = self.get_neighbours_ROAD_flags(pixel)
                 if len(neighbours_road) == 1:
                     if neighbours_road_flags["RIGHT"]:
                         pixel.road_type = Pixel._1_R
@@ -172,43 +184,63 @@ class Map():
         self.pixels_color[pixel.y, pixel.x, PixColor.BLUE.value] = pixel.rgb.blue
 
 
-    def get_neighbours(self, pixel):
+    def get_all_neighbours(self, pixel):
+        """
+        Return pixel's neighbour list
+        :param pixel:
+        :return:
+        """
         result = list()
+        if pixel.x + 1 < self.w:
+            result.append(self.pixels_map[pixel.x+1][pixel.y])
+
+        if pixel.x - 1 >= 0:
+            result.append(self.pixels_map[pixel.x-1][pixel.y])
+
+        if pixel.y - 1 >= 0:
+            result.append(self.pixels_map[pixel.x][pixel.y-1])
+
+        if pixel.y + 1 < self.h:
+            result.append(self.pixels_map[pixel.x][pixel.y+1])
+
+
+        return result
+
+    def get_neighbours_ROAD_flags(self, pixel):
+        """
+        Return  flags for pixel's neighbour type = ROAD
+        :param pixel:
+        :return:
+        """
         neighbours_road_flags = {"UP":False, "DOWN":False, "LEFT":False, "RIGHT":False }
         if pixel.x + 1 < self.w:
             p = self.pixels_map[pixel.x+1][pixel.y]
-            result.append(p)
             if p.type == Pixel.ROAD:
                 neighbours_road_flags["RIGHT"]=True
 
         if pixel.x - 1 >= 0:
             p = self.pixels_map[pixel.x-1][pixel.y]
-            result.append(p)
             if p.type == Pixel.ROAD:
                 neighbours_road_flags["LEFT"]=True
 
         if pixel.y - 1 >= 0:
             p = self.pixels_map[pixel.x][pixel.y-1]
-            result.append(p)
             if p.type == Pixel.ROAD:
                 neighbours_road_flags["UP"]=True
         if pixel.y + 1 < self.h:
             p=self.pixels_map[pixel.x][pixel.y+1]
-            result.append(p)
             if p.type == Pixel.ROAD:
                 neighbours_road_flags["DOWN"]=True
-
-        return result, neighbours_road_flags
+        return neighbours_road_flags
 
 
     def get_neighbours_road(self, pixel):
         result = list()
-        neighbours, neighbours_road_flags = self.get_neighbours(pixel)
-
+        neighbours = self.get_all_neighbours(pixel)
         for n in neighbours:
             if n.type == Pixel.ROAD:
                 result.append(n)
-        return result, neighbours_road_flags
+        return result
 
 
 
