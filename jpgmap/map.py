@@ -211,6 +211,7 @@ class Map():
         return result, neighbours_road_flags
 
 
+
     def find_a_white_pos(self):
         for x in range(self.w):
             for y in range(self.h):

@@ -2,6 +2,7 @@ setup.py
 jpgmap/__init__.py
 jpgmap/car.py
 jpgmap/engine.py
+jpgmap/graph.py
 jpgmap/main.py
 jpgmap/map.py
 jpgmap/pixel.py

@@ -4,9 +4,10 @@ from .map import Map
 from .map import Point
 import pygame
 from pygame.locals import *
-
-
 from enum import Enum
+from .graph import Graph
+
+
 class Dir(Enum):
     SOUTH = 0
     NORTH = 1
@@ -25,6 +26,10 @@ class Engine():
             print("Engine filename [{}]".format(image_filename))
             self.map = Map()
             self.map.load(image_filename)
+
+            self.graph = Graph(self.map)
+
+
 
         def setmap(self, _map):
             self.blank_map = _map

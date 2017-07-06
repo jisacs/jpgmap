@@ -28,6 +28,7 @@ class Pixel():
     #ROAD TYPE
 
 
+
     def __init__(self, x, y):
         """
         param:
@@ -39,6 +40,7 @@ class Pixel():
         self.road_type = self.UNKNOWN
         #self.neighbours = None
 
+
     def __eq__(self, rhs):
         if self.x == rhs.x and self.y == rhs.y:
             return True
@@ -49,6 +51,8 @@ class Pixel():
         return 'x: {}, y: {} type {} road  type {}'.format(str(self.x),
         str(self.y), self.type, self.road_type)
 
+    def pos(self):
+        return self.x, self.y
     """
     def set_neighbours(self, neighbours):
         self.neighbours = neighbours
