@@ -5,7 +5,7 @@ from .map import Point
 import pygame
 from pygame.locals import *
 from enum import Enum
-
+import sys
 
 
 class Dir(Enum):
@@ -16,16 +16,26 @@ class Dir(Enum):
 
 
 class Engine():
-        def __init__(self, image_filename=None):
+        def __init__(self, filename,  output=None):
             """
             param image_filename: str image file name
             """
 
             self.blank_map = None
             self.car_list = list()
-            print("Engine filename [{}]".format(image_filename))
+            print("Engine filename [{}]".format(filename))
             self.map = Map()
-            self.map.load(image_filename)
+
+            if filename.find('.jpgmap') != -1:
+                self.map.load_pickle(filename)
+
+            else:
+                self.map.load(filename)
+                self.map.save_pickle(output)
+                print("Done -> {}".format(output))
+                sys.exit()
+
+
 
 
 
@@ -52,6 +62,7 @@ class Engine():
                             self.map.display()
                         elif event.key == pygame.K_SPACE:
                             self.map.unselected()
+
 
                         if self.map.zoom < 0: self.map.zoom = 1
 

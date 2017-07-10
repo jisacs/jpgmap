@@ -13,6 +13,8 @@ from .tools import printProgressBar
 from .graph import Graph
 import networkx
 from time import time
+import pickle
+import  sys
 
 
 
@@ -56,7 +58,8 @@ class Map():
         self.roads = list()
         self.zoom = 1
         self.last_display_time = 0
-        self.last_display_size_time=0
+        self.last_display_size_time = 0
+
 
         self.graph = None
 
@@ -72,8 +75,8 @@ class Map():
             self.pixels_color=imread(jpg_filename)
             # self.pixels_color.shape
             self.jpg_filename = jpg_filename
-            h, w, c = self.pixels_color.shape
-            self.change_display_size(h, w)
+            self.h, self.w, c = self.pixels_color.shape
+            self.change_display_size(self.h, self.w)
             self.fond = pygame.image.load(self.jpg_filename).convert()
             self.fenetre.blit(self.fond, (0,0))
             self.set_pixels_map(self.pixels_color)
@@ -81,6 +84,36 @@ class Map():
             pygame.display.flip()
             self.analyse_map()
             self.graph = Graph(self)
+
+    def save_pickle(self, filename):
+        """
+        SAve self.pixel_map to pickled file
+        :param filename:
+
+        """
+        sys.setrecursionlimit(100000)
+        print("eEcusion limit {}".format(sys.getrecursionlimit()))
+        print("Dump {} object type of len {}".format(type(self.pixels_map), len(self.pixels_map)))
+        with open(filename, 'wb') as handle:
+            pickle.dump(self.pixels_map, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+    def load_pickle(self, filename):
+        """
+        Load self.pixel_map from pickled file
+        :param filename:
+
+        """
+        with open(filename, 'rb') as handle:
+            self.pixels_map = pickle.load(handle)
+            self.h = len(self.pixels_map[0])
+            self.w = len(self.pixels_map)
+
+            self.fenetre = pygame.display.set_mode((self.w, self.h),
+                                                   pygame.RESIZABLE)
+            #self.change_display_size(self.h, self.w)
+            pygame.display.flip()
+            self.graph = Graph(self)
+
 
     """
     In [1]: w, h = 8, 5;
@@ -109,7 +142,6 @@ class Map():
 
 
     def set_pixels_map(self, pixels_color):
-        self.h,self.w,c= pixels_color.shape
         self.pixels_map = [[Pixel(x,y) for y in range(self.h)] for x in range(self.w)]
         for x in range(self.w):
             for y in range(self.h):
@@ -291,7 +323,6 @@ class Map():
     def display(self):
 
         now = time()
-
         if now - self.last_display_time > .2:
             self.fenetre.fill((0, 0, 0))
             pixels = self.get_pixels_ordered()
@@ -335,10 +366,17 @@ class Map():
         try:
             pixel = self.pixels_map[x][y]
             if pixel.type == Pixel.ROAD:
-                if pixel.selected == True:
+                if pixel.selected:
                     pixel.selected = False
+                    pixel.cross = True
+                elif pixel.cross:
+                    pixel.start = True
+                    pixel.cross = False
+                elif pixel.start:
+                    pixel.start = False
                 else:
                     pixel.selected = True
+
                 self.display_pixel(pixel)
                 selected = list()
                 for pixel in self.get_pixels_road_ordered():

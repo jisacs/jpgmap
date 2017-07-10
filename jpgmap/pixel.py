@@ -47,6 +47,8 @@ class Pixel():
         self.road_type = self.UNKNOWN
         #self.neighbours = None
         self.selected = False
+        self.cross = False
+        self.start = False
         self.neighbours = None
 
 
@@ -63,6 +65,9 @@ class Pixel():
 
     def set_neighours(self, neighbourgs):
         self.neighbours = neighbourgs
+        #self.neighbours = list()
+
+
 
     def pos(self):
         return self.x, self.y
@@ -97,6 +102,13 @@ class Pixel():
             color = pygame.Color("white")
         elif self.type == self.ROCK:
             color = pygame.Color("grey")
+        if self.neighbours:
+            if len(self.neighbours) > 7:
+                color = pygame.Color("green")
+        if self.cross:
+            color = pygame.Color("red")
+        if self.start:
+            color = pygame.Color("cyan")
         if self.selected:
             color = pygame.Color("black")
         pygame.draw.rect(fenetre, color, (x + offset.x, y + offset.y, zoom, zoom))

@@ -10,7 +10,7 @@
 __version__ = "0.0.1"
 
 
-from .main import proclamer
+from .main import run
 from .map import *
 from .engine import *
 """
